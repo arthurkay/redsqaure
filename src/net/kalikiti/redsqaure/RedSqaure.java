@@ -19,12 +19,19 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Observer;
+import java.util.Observable;
 
-public class RedSqaure extends JFrame {
+public class RedSqaure extends JFrame implements Observer {
 	
 	private JTextField addTextfield;
 	private JTable table;
 	private JButton pauseButton, resumeButton, cancelButton, clearButton, addButton;
+	DownloadsTableModel tableModel = new DownloadsTableModel();
+	private Download selectedDownload;
+	private boolean clearing;
 	
 	public RedSqaure() {
 		//Set UI
@@ -83,7 +90,8 @@ public class RedSqaure extends JFrame {
 		addPanel.add(addButton);
 		
 		//Middle Panel
-		table = new JTable(new TableModel());
+
+		table = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(table);
 		downloadsPanel.add(scrollPane);
 		table.setAutoCreateRowSorter(true);
@@ -95,19 +103,20 @@ public class RedSqaure extends JFrame {
 		
 		//Bottom Panel
 		pauseButton = new JButton("Pause");
+		pauseButton.setEnabled(false);
 		buttonPanel.add(pauseButton);
 		resumeButton = new JButton("Resume");
+		resumeButton.setEnabled(false);
 		buttonPanel.add(resumeButton);
 		cancelButton = new JButton("Cancel");
+		cancelButton.setEnabled(false);
 		buttonPanel.add(cancelButton);
 		clearButton = new JButton("Clear");
+		clearButton.setEnabled(false);
 		buttonPanel.add(clearButton);
 		
+		//Functionality declarations 
 		
-		//Setting up the table to hold files being downloaded
-		
-		
-
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				actionExit();
@@ -134,6 +143,106 @@ public class RedSqaure extends JFrame {
 	
 	private void addUrl() {
 		//Logic of adding urls for further file download processing
+		URL validUrl = verifyUrl(addTextfield.getText().toString());
+		if (validUrl != null) {
+			tableModel.addDownload(new Download(validUrl));
+			addTextfield.setText("");
+		}
+		else {
+			JOptionPane.showMessageDialog(this, "Invalid URL address!", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private URL verifyUrl(String url) {
+		if (!url.toLowerCase().startsWith("http://")) {
+			if (!url.toLowerCase().startsWith("https://"))
+			return null;
+		}
+		
+		URL validUrl = null;
+		try {
+			validUrl = new URL(url);
+			}
+			catch (MalformedURLException err) {
+				System.out.println(err.getMessage());
+				return null;
+			}
+			
+		if (validUrl.getFile().length() < 2)
+			return null;
+		return validUrl;
+	}
+	
+	public void tableSelectionChanged() {
+		if (selectedDownload != null) 
+			selectedDownload.deleteObserver(RedSqaure.this);
+			
+			if (!clearing && table.getSelectedRow() > -1) {
+				selectedDownload = tableModel.getDownload(table.getSelectedRow());
+				selectedDownload.addObserver(RedSqaure.this);
+				updateButtons();
+			}
+	}
+	
+	private void actionPause() {
+		selectedDownload.pause();
+		updateButtons();
+	}
+	
+	private void actionResume() {
+		selectedDownload.resume();
+		updateButtons();
+	}
+	
+	private void actionCancel() {
+		selectedDownload.cancel();
+		updateButtons();
+	}
+	
+	private void actionClear() {
+		clearing = true;
+		tableModel.clearDownload(table.getSelectedRow());
+		selectedDownload = null;
+		updateButtons();
+	}
+	
+	public void update(Observable o, Object arg) {
+		if (selectedDownload != null && selectedDownload.equals(o))
+			updateButtons();
+	}
+	
+	public void updateButtons() {
+		if (selectedDownload != null) {
+			int status = selectedDownload.getStatus();
+			switch (status) {
+			case Download.DOWNLOADING:
+				pauseButton.setEnabled(true);
+				resumeButton.setEnabled(false);
+				cancelButton.setEnabled(true);
+				clearButton.setEnabled(false);
+			case Download.PAUSED:
+				pauseButton.setEnabled(false);
+				resumeButton.setEnabled(true);
+				cancelButton.setEnabled(false);
+				clearButton.setEnabled(false);
+			case Download.ERROR:
+				pauseButton.setEnabled(false);
+				resumeButton.setEnabled(true);
+				cancelButton.setEnabled(false);
+				clearButton.setEnabled(true);
+			default:
+				pauseButton.setEnabled(false);
+				resumeButton.setEnabled(false);
+				cancelButton.setEnabled(false);
+				clearButton.setEnabled(true);
+			}
+		}
+		else {
+			pauseButton.setEnabled(false);
+			resumeButton.setEnabled(false);
+			cancelButton.setEnabled(false);
+			clearButton.setEnabled(false);
+		}
 	}
 	
 	//Now run the App

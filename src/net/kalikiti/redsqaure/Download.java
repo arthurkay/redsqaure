@@ -43,7 +43,7 @@ public class Download extends Observable implements Runnable {
 		downloaded = 0;
 		status = DOWNLOADING;
 		
-		//Begin the downaload now
+		//Begin the download now
 		download();
 	}
 	
@@ -101,7 +101,7 @@ public class Download extends Observable implements Runnable {
 		try {
 			//Open A connection
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			
+			System.out.println("Connecting to "+url);
 			//Portion of file to download
 			connection.setRequestProperty("Range", "Bytes=" + downloaded + "-");
 			
@@ -109,11 +109,13 @@ public class Download extends Observable implements Runnable {
 			connection.connect();
 			if (connection.getResponseCode() != 200) {
 				error();
+				System.out.println("Unable to connect, server responded with "+ connection.getResponseMessage() +" \n Response code of: "+connection.getResponseCode());
 			}
 			
 			int contentLength = connection.getContentLength();
 			if (contentLength < 1) {
 				error();
+				System.out.println("File content length error, cannot be less than 1 \n Response: "+connection.getContentLength());
 			}
 			
 			//Setting the size of the download file, if not already set.
