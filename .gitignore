@@ -2,3 +2,6 @@ bin
 build
 .classpath
 .project
+.gradle
+.settings
+.vscode
