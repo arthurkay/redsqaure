@@ -1,0 +1,35 @@
+apply plugin: 'java'
+
+version = '0.0.1'
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/net/kalikiti/redsqaure'
+        }
+    }
+    test {
+        java {
+            srcDir 'src/net/kalikiti/redsqaure-test'
+        }
+    }
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+}
+
+task buildJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'RedSqaure Download Manager',
+            'Implementation-Version': version,
+            'Main-Class': 'net.kalikiti.redsqaure.RedSqaure'
+    }
+    baseName = project.name
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
