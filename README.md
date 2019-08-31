@@ -19,5 +19,5 @@ This is an open source project released under the [MIT licence](LICENSE.md), mea
 cess to this code can literally do whatever pleases them with the code.
 The author of this source code, does not in any way assume any lose and/or damage that may arise from the use or acquisition of this software.
 
-Happy Coding :happy:
+Happy Coding :satisfied:
 
