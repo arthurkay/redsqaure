@@ -5,12 +5,12 @@ version = '0.0.1'
 sourceSets {
     main {
         java {
-            srcDir 'src/net/kalikiti/redsqaure'
+            srcDir 'src/'
         }
     }
     test {
         java {
-            srcDir 'src/net/kalikiti/redsqaure-test'
+            srcDir 'src/'
         }
     }
 }

@@ -9,7 +9,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -22,7 +21,6 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.tools.Tool;
 import javax.swing.JTable;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
@@ -35,7 +33,6 @@ import javax.swing.JScrollPane;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Observer;
-import java.util.logging.Logger;
 import java.util.Observable;
 
 public class RedSqaure extends JFrame implements Observer {
